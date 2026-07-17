@@ -443,6 +443,9 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
   .site-header nav { transition-delay: 0s !important; }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 801px) {
   .photo-collage { height: auto !important; }
   .photo-collage__sticky { position: relative !important; height: auto !important; min-height: max(760px, 100vh); min-height: max(760px, 100svh); }
   .photo-layer, .photo-collage__heading, .photo-collage__closing { will-change: auto !important; }
