@@ -160,7 +160,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .footer-meta { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 2rem; color: rgba(255, 250, 240, 0.5); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
 
 .home { background: #fff; }
-.home .site-header { position: fixed; left: 0; right: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.52), transparent); }
+.home .site-header { position: fixed; left: 0; right: 0; background: #fff; box-shadow: 0 1px 0 rgba(32, 37, 31, 0.1); }
 .hero-media {
   position: fixed;
   z-index: 0;
@@ -321,6 +321,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   body.menu-open { overflow: hidden; }
   .site-header { align-items: center; min-height: 5.8rem; gap: 0.75rem; padding: 0.7rem 0.85rem; transition: background 180ms ease, box-shadow 180ms ease; }
   .site-header.nav-open { background: rgba(18, 21, 17, 0.96); box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .home .site-header.nav-open { background: #fff; box-shadow: 0 1px 0 rgba(32, 37, 31, 0.1); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .brand { flex-basis: 70px; width: 70px; height: 70px; border-width: 2px; box-shadow: 0 0 0 1px rgba(32, 37, 31, 0.16), 0 10px 28px rgba(0, 0, 0, 0.26); }
   .brand img { transform: scale(1.23); }
   .menu-toggle { position: relative; display: grid; flex: 0 0 52px; width: 52px; height: 52px; margin-left: auto; }
