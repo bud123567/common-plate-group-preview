@@ -225,7 +225,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .photo-collage__heading { position: absolute; z-index: 1; top: 8vh; left: 5vw; max-width: 46rem; pointer-events: none; }
 .photo-collage__heading .eyebrow { color: rgba(255, 250, 240, 0.65); }
 .photo-collage__heading h2 { max-width: 9ch; font-size: clamp(4rem, 8vw, 8.6rem); letter-spacing: -0.045em; }
-.photo-collage.is-scroll-ready .photo-collage__heading, .photo-collage.is-scroll-ready .photo-collage__closing { will-change: opacity, transform; }
+.photo-collage.is-scroll-ready.is-collage-active .photo-collage__heading, .photo-collage.is-scroll-ready.is-collage-active .photo-collage__closing { will-change: opacity, transform; }
 .photo-layer {
   position: absolute;
   margin: 0;
@@ -234,8 +234,10 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   background: #333;
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.42);
   transform-origin: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
-.photo-collage.is-scroll-ready .photo-layer { will-change: opacity, transform; }
+.photo-collage.is-scroll-ready.is-collage-active .photo-layer { will-change: opacity, transform; }
 .photo-layer img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .photo-layer figcaption { position: absolute; right: 0.75rem; bottom: 0.75rem; display: inline-flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.7rem; color: #22261f; background: rgba(255, 250, 240, 0.94); font-size: 0.62rem; font-weight: 700; line-height: 1; letter-spacing: 0.14em; text-transform: uppercase; }
 .photo-layer figcaption span { color: var(--rust); }
@@ -366,19 +368,19 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   .grid, .gallery { grid-template-columns: 1fr; }
   .image-gallery { columns: 1; }
   .home .story-panel { grid-template-columns: 1fr; padding: 5rem 7vw; }
-  .home .story-panel { min-height: 88vh; min-height: 88svh; background: rgba(24, 24, 24, 0.86); }
+  .home .story-panel { min-height: 88vh; min-height: 88svh; background: rgba(24, 24, 24, 0.86); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .photo-collage.is-scroll-ready { height: 400vh; height: 400svh; }
   .photo-collage__sticky::after { inset: 0.55rem; }
   .photo-collage__heading { top: 13vh; left: 1.4rem; }
   .photo-collage__heading h2 { font-size: clamp(3.5rem, 15vw, 6rem); }
-  .photo-layer { border-width: 4px; }
+  .photo-layer { border-width: 4px; border-color: #fffaf0; box-shadow: 0 1rem 2.25rem rgba(0, 0, 0, 0.32); }
   .photo-layer--table { top: 29vh; left: -17vw; width: 112vw; height: 44vh; }
   .photo-layer--chef { top: 7vh; right: -8vw; width: 51vw; height: 52vh; }
   .photo-layer--cocktail { bottom: 2vh; left: -7vw; width: 68vw; height: 28vh; }
   .photo-layer--plate { right: -14vw; bottom: 15vh; width: 71vw; height: 30vh; }
   .photo-layer figcaption { right: 0.45rem; bottom: 0.45rem; padding: 0.45rem 0.55rem; font-size: 0.56rem; }
   .photo-layer--chef figcaption, .photo-layer--plate figcaption { right: auto; left: 0.45rem; }
-  .photo-collage__closing { bottom: 5vh; left: 1.4rem; width: calc(100% - 2.8rem); padding: 1.4rem; }
+  .photo-collage__closing { bottom: 5vh; left: 1.4rem; width: calc(100% - 2.8rem); padding: 1.4rem; box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.28); }
   .photo-collage__closing p { max-width: 16rem; font-size: 1.35rem; }
   .photo-collage:not(.is-scroll-ready) { height: auto; }
   .photo-collage:not(.is-scroll-ready) .photo-collage__sticky {
