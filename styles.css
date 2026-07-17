@@ -380,6 +380,47 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   .photo-layer--chef figcaption, .photo-layer--plate figcaption { right: auto; left: 0.45rem; }
   .photo-collage__closing { bottom: 5vh; left: 1.4rem; width: calc(100% - 2.8rem); padding: 1.4rem; }
   .photo-collage__closing p { max-width: 16rem; font-size: 1.35rem; }
+  .photo-collage:not(.is-scroll-ready) { height: auto; }
+  .photo-collage:not(.is-scroll-ready) .photo-collage__sticky {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    padding: 6.8rem 0.75rem 1rem;
+  }
+  .photo-collage:not(.is-scroll-ready) .photo-collage__heading {
+    position: relative;
+    grid-column: 1 / -1;
+    top: auto;
+    left: auto;
+    padding: 1.4rem 0.55rem 1.8rem;
+  }
+  .photo-collage:not(.is-scroll-ready) .photo-collage__heading h2 { max-width: 8ch; font-size: clamp(3.45rem, 15vw, 5.5rem); }
+  .photo-collage:not(.is-scroll-ready) .photo-layer {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    transform: none !important;
+  }
+  .photo-collage:not(.is-scroll-ready) .photo-layer--table { grid-column: 1 / -1; height: 72vw; }
+  .photo-collage:not(.is-scroll-ready) .photo-layer--chef { grid-column: 1; height: 64vw; }
+  .photo-collage:not(.is-scroll-ready) .photo-layer--cocktail { grid-column: 2; height: 64vw; margin-top: 2.2rem; }
+  .photo-collage:not(.is-scroll-ready) .photo-layer--plate { grid-column: 1 / -1; height: 72vw; }
+  .photo-collage:not(.is-scroll-ready) .photo-collage__closing {
+    position: relative;
+    grid-column: 1 / -1;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 0.25rem;
+    opacity: 1;
+    transform: none !important;
+  }
   .concept-wall { grid-template-columns: 1fr; }
   .concept-tile, .concept-tile:nth-child(4), .concept-tile:nth-child(5) { grid-column: auto; }
   .card, .card:nth-child(3n) { border-right: 0; }
