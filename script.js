@@ -50,8 +50,9 @@ document.querySelectorAll('[data-current-year]').forEach((year) => {
 
 const heroScroll = document.querySelector('.hero-scroll');
 const heroCopy = document.querySelector('.hero-copy');
-const heroVideo = document.querySelector('.top-hero video');
+const heroVideo = document.querySelector('.hero-media video');
 const heroVideoControl = document.querySelector('[data-hero-video-control]');
+const storyPanel = document.querySelector('#story');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 if (heroVideo) {
@@ -115,8 +116,14 @@ if (heroVideo) {
     if (!document.hidden && heroIsVisible && heroVideo.paused) attemptVideoPlayback();
   });
   if ('IntersectionObserver' in window && heroScroll) {
+    const visibleVideoSections = new Set();
     const videoVisibilityObserver = new IntersectionObserver((entries) => {
-      heroIsVisible = entries[0].isIntersecting;
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) visibleVideoSections.add(entry.target);
+        else visibleVideoSections.delete(entry.target);
+      });
+      heroIsVisible = visibleVideoSections.size > 0;
+      document.body.classList.toggle('hero-media-hidden', !heroIsVisible);
       if (heroIsVisible) {
         attemptVideoPlayback();
       } else if (!heroVideo.paused) {
@@ -124,6 +131,7 @@ if (heroVideo) {
       }
     }, { threshold: 0.01 });
     videoVisibilityObserver.observe(heroScroll);
+    if (storyPanel) videoVisibilityObserver.observe(storyPanel);
   }
 }
 
