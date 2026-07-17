@@ -4,16 +4,20 @@ const nav = document.querySelector('#main-nav');
 
 if (header && menuButton && nav) {
   const mobileNavigation = window.matchMedia('(max-width: 800px)');
+  const homeLink = nav.querySelector('a[href="index.html"]');
   menuButton.setAttribute('aria-haspopup', 'true');
   if (!nav.hasAttribute('aria-label')) nav.setAttribute('aria-label', 'Primary navigation');
-  if (document.body.classList.contains('home')) nav.querySelector('a[href="index.html"]')?.setAttribute('aria-current', 'page');
+  if (document.body.classList.contains('home') && homeLink) homeLink.setAttribute('aria-current', 'page');
 
   const setMenu = (isOpen, restoreFocus = false) => {
     header.classList.toggle('nav-open', isOpen);
     document.body.classList.toggle('menu-open', isOpen && mobileNavigation.matches);
     menuButton.setAttribute('aria-expanded', String(isOpen));
     menuButton.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
-    if (isOpen) window.requestAnimationFrame(() => nav.querySelector('a')?.focus());
+    if (isOpen) window.requestAnimationFrame(() => {
+      const firstLink = nav.querySelector('a');
+      if (firstLink) firstLink.focus();
+    });
     if (!isOpen && restoreFocus) menuButton.focus();
   };
 
@@ -30,9 +34,14 @@ if (header && menuButton && nav) {
   document.addEventListener('click', (event) => {
     if (!header.contains(event.target)) closeMenu();
   });
-  mobileNavigation.addEventListener?.('change', (event) => {
+  const handleNavigationChange = (event) => {
     if (!event.matches) closeMenu();
-  });
+  };
+  if (typeof mobileNavigation.addEventListener === 'function') {
+    mobileNavigation.addEventListener('change', handleNavigationChange);
+  } else if (typeof mobileNavigation.addListener === 'function') {
+    mobileNavigation.addListener(handleNavigationChange);
+  }
 }
 
 document.querySelectorAll('[data-current-year]').forEach((year) => {
@@ -42,7 +51,67 @@ document.querySelectorAll('[data-current-year]').forEach((year) => {
 const heroScroll = document.querySelector('.hero-scroll');
 const heroCopy = document.querySelector('.hero-copy');
 const heroVideo = document.querySelector('.top-hero video');
+const heroVideoControl = document.querySelector('[data-hero-video-control]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+if (heroVideo) {
+  let gestureRetryComplete = false;
+
+  const showVideoControl = (show) => {
+    if (heroVideoControl) heroVideoControl.hidden = !show;
+  };
+
+  const prepareVideo = () => {
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.autoplay = true;
+    heroVideo.playsInline = true;
+    heroVideo.setAttribute('muted', '');
+    heroVideo.setAttribute('playsinline', '');
+    heroVideo.setAttribute('webkit-playsinline', '');
+  };
+
+  const attemptVideoPlayback = () => {
+    prepareVideo();
+
+    let playRequest;
+    try {
+      playRequest = heroVideo.play();
+    } catch (error) {
+      showVideoControl(true);
+      return;
+    }
+
+    if (playRequest && typeof playRequest.then === 'function') {
+      playRequest
+        .then(() => showVideoControl(false))
+        .catch(() => {
+          if (heroVideo.paused) showVideoControl(true);
+        });
+    } else if (!heroVideo.paused) {
+      showVideoControl(false);
+    }
+  };
+
+  const retryVideoOnGesture = () => {
+    if (gestureRetryComplete || !heroVideo.paused) return;
+    gestureRetryComplete = true;
+    attemptVideoPlayback();
+  };
+
+  prepareVideo();
+  attemptVideoPlayback();
+  heroVideo.addEventListener('loadeddata', attemptVideoPlayback, { once: true });
+  heroVideo.addEventListener('canplay', attemptVideoPlayback, { once: true });
+  heroVideo.addEventListener('playing', () => showVideoControl(false));
+  if (heroVideoControl) heroVideoControl.addEventListener('click', attemptVideoPlayback);
+  document.addEventListener('touchstart', retryVideoOnGesture, { once: true, passive: true });
+  document.addEventListener('pointerdown', retryVideoOnGesture, { once: true, passive: true });
+  window.addEventListener('pageshow', attemptVideoPlayback);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && heroVideo.paused) attemptVideoPlayback();
+  });
+}
 
 if (heroScroll && heroCopy) {
   let ticking = false;
@@ -77,13 +146,14 @@ const photoCollage = document.querySelector('[data-photo-collage]');
 
 if (photoCollage) {
   const layers = Array.from(photoCollage.querySelectorAll('[data-scroll-layer]'));
+  const collageSticky = photoCollage.querySelector('.photo-collage__sticky');
   const collageCopy = photoCollage.querySelector('[data-collage-copy]');
   const collageClosing = photoCollage.querySelector('[data-collage-closing]');
   let collageTicking = false;
 
   const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
   const interpolate = (start, end, progress) => start + (end - start) * progress;
-  const easeOutCubic = (progress) => 1 - ((1 - progress) ** 3);
+  const easeOutCubic = (progress) => 1 - Math.pow(1 - progress, 3);
 
   const clearCollageStyles = () => {
     photoCollage.classList.remove('is-scroll-ready');
@@ -91,10 +161,14 @@ if (photoCollage) {
       layer.style.removeProperty('opacity');
       layer.style.removeProperty('transform');
     });
-    collageCopy?.style.removeProperty('opacity');
-    collageCopy?.style.removeProperty('transform');
-    collageClosing?.style.removeProperty('opacity');
-    collageClosing?.style.removeProperty('transform');
+    if (collageCopy) {
+      collageCopy.style.removeProperty('opacity');
+      collageCopy.style.removeProperty('transform');
+    }
+    if (collageClosing) {
+      collageClosing.style.removeProperty('opacity');
+      collageClosing.style.removeProperty('transform');
+    }
   };
 
   const updateCollage = () => {
@@ -104,20 +178,21 @@ if (photoCollage) {
     }
 
     const rect = photoCollage.getBoundingClientRect();
-    const scrollDistance = Math.max(rect.height - window.innerHeight, 1);
+    const stickyHeight = collageSticky ? collageSticky.getBoundingClientRect().height : window.innerHeight;
+    const scrollDistance = Math.max(rect.height - stickyHeight, 1);
     const progress = clamp(-rect.top / scrollDistance);
 
     layers.forEach((layer) => {
-      const start = Number(layer.dataset.start ?? 0);
-      const end = Number(layer.dataset.end ?? 1);
+      const start = Number(layer.dataset.start === undefined ? 0 : layer.dataset.start);
+      const end = Number(layer.dataset.end === undefined ? 1 : layer.dataset.end);
       const layerProgress = clamp((progress - start) / Math.max(end - start, 0.01));
       const easedProgress = easeOutCubic(layerProgress);
-      const fromY = Number(layer.dataset.fromY ?? 0);
-      const toY = Number(layer.dataset.toY ?? 0);
-      const fromScale = Number(layer.dataset.fromScale ?? 1);
-      const toScale = Number(layer.dataset.toScale ?? 1);
-      const fromRotate = Number(layer.dataset.fromRotate ?? 0);
-      const toRotate = Number(layer.dataset.toRotate ?? 0);
+      const fromY = Number(layer.dataset.fromY === undefined ? 0 : layer.dataset.fromY);
+      const toY = Number(layer.dataset.toY === undefined ? 0 : layer.dataset.toY);
+      const fromScale = Number(layer.dataset.fromScale === undefined ? 1 : layer.dataset.fromScale);
+      const toScale = Number(layer.dataset.toScale === undefined ? 1 : layer.dataset.toScale);
+      const fromRotate = Number(layer.dataset.fromRotate === undefined ? 0 : layer.dataset.fromRotate);
+      const toRotate = Number(layer.dataset.toRotate === undefined ? 0 : layer.dataset.toRotate);
       const y = interpolate(fromY, toY, easedProgress);
       const scale = interpolate(fromScale, toScale, easedProgress);
       const rotate = interpolate(fromRotate, toRotate, easedProgress);
@@ -161,7 +236,17 @@ if (photoCollage) {
   syncCollageMotion();
   window.addEventListener('scroll', requestCollageUpdate, { passive: true });
   window.addEventListener('resize', requestCollageUpdate);
-  reduceMotion.addEventListener?.('change', syncCollageMotion);
+  window.addEventListener('orientationchange', requestCollageUpdate);
+  window.addEventListener('pageshow', requestCollageUpdate);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', requestCollageUpdate);
+    window.visualViewport.addEventListener('scroll', requestCollageUpdate, { passive: true });
+  }
+  if (typeof reduceMotion.addEventListener === 'function') {
+    reduceMotion.addEventListener('change', syncCollageMotion);
+  } else if (typeof reduceMotion.addListener === 'function') {
+    reduceMotion.addListener(syncCollageMotion);
+  }
 }
 
 
