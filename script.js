@@ -145,6 +145,7 @@ if (heroScroll && heroCopy) {
 const photoCollage = document.querySelector('[data-photo-collage]');
 
 if (photoCollage) {
+  const mobileCollage = window.matchMedia('(max-width: 800px)');
   const layers = Array.from(photoCollage.querySelectorAll('[data-scroll-layer]'));
   const collageSticky = photoCollage.querySelector('.photo-collage__sticky');
   const collageCopy = photoCollage.querySelector('[data-collage-copy]');
@@ -154,6 +155,7 @@ if (photoCollage) {
   const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
   const interpolate = (start, end, progress) => start + (end - start) * progress;
   const easeOutCubic = (progress) => 1 - Math.pow(1 - progress, 3);
+  const collageMotionIsReduced = () => reduceMotion.matches && !mobileCollage.matches;
 
   const clearCollageStyles = () => {
     photoCollage.classList.remove('is-scroll-ready');
@@ -172,7 +174,7 @@ if (photoCollage) {
   };
 
   const updateCollage = () => {
-    if (reduceMotion.matches) {
+    if (collageMotionIsReduced()) {
       collageTicking = false;
       return;
     }
@@ -217,14 +219,14 @@ if (photoCollage) {
   };
 
   const requestCollageUpdate = () => {
-    if (!collageTicking && !reduceMotion.matches) {
+    if (!collageTicking && !collageMotionIsReduced()) {
       window.requestAnimationFrame(updateCollage);
       collageTicking = true;
     }
   };
 
   const syncCollageMotion = () => {
-    if (reduceMotion.matches) {
+    if (collageMotionIsReduced()) {
       clearCollageStyles();
       return;
     }
@@ -246,6 +248,11 @@ if (photoCollage) {
     reduceMotion.addEventListener('change', syncCollageMotion);
   } else if (typeof reduceMotion.addListener === 'function') {
     reduceMotion.addListener(syncCollageMotion);
+  }
+  if (typeof mobileCollage.addEventListener === 'function') {
+    mobileCollage.addEventListener('change', syncCollageMotion);
+  } else if (typeof mobileCollage.addListener === 'function') {
+    mobileCollage.addListener(syncCollageMotion);
   }
 }
 
