@@ -192,6 +192,7 @@ if (photoCollage) {
   const collageCopy = photoCollage.querySelector('[data-collage-copy]');
   const collageClosing = photoCollage.querySelector('[data-collage-closing]');
   const collageImages = Array.from(photoCollage.querySelectorAll('img'));
+  photoCollage.classList.add('is-image-loading-managed');
 
   const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
   const interpolate = (start, end, progress) => start + (end - start) * progress;
@@ -370,13 +371,29 @@ if (photoCollage) {
     requestCollageUpdate();
   };
 
+  let collageImagesPrepared = false;
   const prepareCollageImages = () => {
+    if (collageImagesPrepared) return;
+    collageImagesPrepared = true;
     collageImages.forEach((image) => {
       image.loading = 'eager';
-      if (typeof image.decode === 'function') image.decode().catch(() => {});
+      const layer = image.closest('[data-scroll-layer]');
+      const revealImage = () => {
+        const decoding = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
+        decoding.catch(() => {}).then(() => {
+          if (layer) layer.classList.add('is-image-ready');
+        });
+      };
+
+      if (image.complete && image.naturalWidth > 0) {
+        revealImage();
+      } else {
+        image.addEventListener('load', revealImage, { once: true });
+      }
     });
   };
 
+  prepareCollageImages();
   syncCollageMotion();
   window.addEventListener('scroll', requestCollageUpdate, { passive: true });
   window.addEventListener('resize', () => refreshCollageMeasurements(false));
@@ -392,7 +409,7 @@ if (photoCollage) {
         prepareCollageImages();
         refreshCollageMeasurements(true);
       }
-    }, { rootMargin: '75% 0px', threshold: 0 });
+    }, { rootMargin: '125% 0px', threshold: 0 });
     collageActivityObserver.observe(photoCollage);
   } else {
     photoCollage.classList.add('is-collage-active');
