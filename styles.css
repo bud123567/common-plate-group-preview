@@ -317,10 +317,11 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .jobs-section-heading .eyebrow { color: #93402b; font-weight: 700; }
 .jobs-section-heading h2 { max-width: 12ch; font-size: clamp(3rem, 5.8vw, 6rem); letter-spacing: -0.045em; }
 .jobs-section-heading > p { max-width: 42rem; margin: 0; color: rgba(32, 37, 31, 0.7); font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.7; }
-.jobs-grid { width: min(100%, 1480px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.85rem, 1.5vw, 1.5rem); margin: 0 auto; }
+.jobs-grid { width: min(100%, 1480px); display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: clamp(0.85rem, 1.5vw, 1.5rem); margin: 0 auto; }
 .job-card {
   min-width: 0;
   min-height: 31rem;
+  grid-column: span 2;
   display: flex;
   flex-direction: column;
   padding: clamp(1.5rem, 2.4vw, 2.25rem);
@@ -336,7 +337,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .job-card__top { position: relative; min-height: 7.5rem; display: grid; place-items: center; }
 .job-card__number { position: absolute; top: 0; right: 0; color: rgba(32, 37, 31, 0.42); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; }
 .job-card__icon { width: clamp(4.8rem, 7vw, 6.4rem); height: clamp(4.8rem, 7vw, 6.4rem); display: block; object-fit: contain; }
-.job-card h3 { margin: 1.2rem 0 0; font-family: Georgia, serif; font-size: clamp(1.7rem, 2.5vw, 2.35rem); font-weight: 400; line-height: 1.04; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.job-card h3 { min-height: 2.08em; display: flex; align-items: center; justify-content: center; margin: 1.2rem 0 0; font-family: Georgia, serif; font-size: clamp(1.7rem, 2.5vw, 2.35rem); font-weight: 400; line-height: 1.04; letter-spacing: -0.025em; overflow-wrap: normal; text-wrap: balance; }
 .job-card__schedule { width: max-content; max-width: 100%; margin: 1rem auto 0; padding: 0.42rem 0.66rem; color: #93402b; border: 1px solid rgba(147, 64, 43, 0.3); border-radius: 999px; background: rgba(255, 250, 240, 0.55); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; line-height: 1; text-transform: uppercase; }
 .job-card__summary { flex: 1; margin: 1.35rem 0 1.7rem; color: rgba(32, 37, 31, 0.69); font-size: 0.9rem; line-height: 1.65; }
 .job-card__link { min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 0.8rem 1rem; color: var(--cream); background: var(--ink); font-size: 0.67rem; font-weight: 700; letter-spacing: 0.13em; text-decoration: none; text-transform: uppercase; transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease; }
@@ -379,8 +380,15 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .jobs-equal-opportunity { width: min(88vw, 1320px); margin: 0 auto; padding: 1.75rem 0 2.25rem; border-top: 1px solid rgba(255, 250, 240, 0.22); color: rgba(255, 250, 240, 0.7); font-size: 0.72rem; line-height: 1.6; }
 
 @media (min-width: 700px) and (max-width: 1199px) {
-  .jobs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .jobs-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .job-card { min-height: 28rem; }
+  .job-card:last-child { grid-column: 2 / span 2; }
+}
+
+@media (min-width: 1200px) {
+  .job-card:nth-last-child(3) { grid-column: 2 / span 2; }
+  .job-card:nth-last-child(2) { grid-column: 4 / span 2; }
+  .job-card:last-child { grid-column: 6 / span 2; }
 }
 
 @media (max-width: 800px) {
@@ -403,11 +411,12 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 }
 
 @media (max-width: 699px) {
-  .jobs-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .job-card { min-height: 0; padding: 1.5rem; }
+  .jobs-grid { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 1rem; }
+  .job-card,
+  .job-card:last-child { min-height: 0; grid-column: auto; padding: 1.5rem; }
   .job-card__top { min-height: 6.25rem; }
   .job-card__icon { width: 5rem; height: 5rem; }
-  .job-card h3 { font-size: 2rem; }
+  .job-card h3 { min-height: 0; font-size: 2rem; }
   .job-card__summary { min-height: 0; }
 }
 
@@ -481,7 +490,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
 .footer-meta { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 2rem; color: rgba(255, 250, 240, 0.5); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
 
 .home { background: #fff; }
-.home .site-header { position: fixed; left: 0; right: 0; background: #fff; box-shadow: 0 1px 0 rgba(32, 37, 31, 0.1); }
+.home .site-header { position: fixed; left: 0; right: 0; }
 .hero-media {
   position: fixed;
   z-index: 0;
@@ -527,8 +536,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   -webkit-backdrop-filter: blur(1px);
   box-shadow: 0 -30px 70px rgba(0, 0, 0, 0.24);
 }
-.home .story-panel h1 { max-width: 500px; font-size: clamp(3.4rem, 7vw, 7rem); }
-.home .story-panel h1 { text-shadow: 0 5px 12px rgba(0, 0, 0, 0.52), 0 18px 38px rgba(0, 0, 0, 0.42); }
+.home .story-panel .story-title { max-width: 500px; font-size: clamp(3.4rem, 7vw, 7rem); text-shadow: 0 5px 12px rgba(0, 0, 0, 0.52), 0 18px 38px rgba(0, 0, 0, 0.42); }
 .home .story-panel .story-copy { max-width: 760px; margin: 0; font-size: clamp(1rem, 1.7vw, 1.35rem); line-height: 1.7; }
 .home .story-panel .button { margin-top: 1.8rem; color: #232323; background: #fff; }
 .photo-collage { position: relative; z-index: 3; min-height: 100vh; min-height: 100svh; overflow: visible; color: var(--cream); background: #151814; }
@@ -648,7 +656,6 @@ h2 { font-size: clamp(2.1rem, 5vw, 4.5rem); }
   body.menu-open::before { content: ""; position: fixed; z-index: 19; inset: 5.8rem 0 0; background: rgba(20, 23, 19, 0.16); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); pointer-events: none; }
   .site-header { align-items: center; min-height: 5.8rem; gap: 0.75rem; padding: 0.7rem 0.85rem; transition: background 180ms ease, box-shadow 180ms ease; }
   .site-header.nav-open { background: rgba(18, 21, 17, 0.96); box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-  .home .site-header.nav-open { background: #fff; box-shadow: 0 1px 0 rgba(32, 37, 31, 0.1); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .brand { flex-basis: 70px; width: 70px; height: 70px; border-width: 2px; box-shadow: 0 0 0 1px rgba(32, 37, 31, 0.16), 0 10px 28px rgba(0, 0, 0, 0.26); }
   .brand img { transform: scale(1.23); }
   .menu-toggle { position: relative; display: grid; flex: 0 0 52px; width: 52px; height: 52px; margin-left: auto; }
