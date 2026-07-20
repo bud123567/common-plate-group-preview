@@ -111,6 +111,23 @@ visits within a couple of minutes (CDN caching) and already-open tabs within
 whole login. If it ever leaks, revoke it on GitHub and generate a new one; the
 old one instantly stops working.
 
+## Obfuscated JavaScript (a speed bump, not a lock)
+
+The JavaScript published to the live site is **obfuscated** (scrambled variable
+names + base64-encoded strings) so it's hard to read at a glance. Be clear on
+what this is and isn't:
+
+- **It is not encryption.** The browser has to run the code, so anyone
+  determined can reverse it. It only deters casual snooping.
+- **Your readable source is the root `.js` files** here (`guard.js`, `admin.js`,
+  `script.js`) — edit those. `obfuscate.sh` scrambles them into `dist/`, which is
+  what gets deployed. To change the admin password or any config: edit the
+  readable root file, run `./obfuscate.sh`, then redeploy `dist/`'s JS.
+- **Keep this folder backed up.** The readable source is intentionally NOT in the
+  public repo — only the obfuscated version is. Older commits in the repo history
+  still contain the pre-obfuscation readable code; fully scrubbing that would mean
+  rewriting git history and isn't worth it for the protection it (doesn't) add.
+
 ## Files
 
 - `guard.js` — the guard + kill-switch reader (edit the CONFIG block at the top).
