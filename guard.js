@@ -31,11 +31,15 @@
   // e.g. 'https://www.yourdomain.com'  — leave '' to just show the block screen.
   var CANONICAL_URL = '';
 
-  // Optional remote kill-switch. Host a small JSON file somewhere you control
-  // (see status.json). When it returns {"enabled": false} the site goes dark,
-  // even on your allowed domain — and so does any clone that still points here.
-  // Leave '' to disable the remote check.
-  var STATUS_URL = '';
+  // Remote kill-switch. guard.js reads this flag; the admin page (admin.html)
+  // flips it. When it returns {"enabled": false} the site goes dark — on your
+  // live site and on any clone that still points here. Leave '' to disable.
+  // This reads status.json straight from the repo (no Pages rebuild needed).
+  var STATUS_URL = 'https://raw.githubusercontent.com/bud123567/common-plate-group-preview/main/status.json';
+
+  // How often (ms) to re-check the kill-switch so already-open tabs also go
+  // dark. 0 = check once on load only. 300000 = every 5 minutes.
+  var POLL_MS = 300000;
 
   // Shown on the block screen so real visitors can reach you.
   var CONTACT_EMAIL = 'info@commonplatehg.com';
@@ -152,13 +156,18 @@
   }
 
   // --- 2. Remote kill-switch -------------------------------------------
-  // Fails OPEN on your allowed domain: if the flag can't be fetched, the site
-  // keeps working. It only goes dark when the flag explicitly says disabled.
-  if (STATUS_URL) {
-    fetch(STATUS_URL, { cache: 'no-store' })
+  // Fails OPEN: if the flag can't be fetched, the site keeps working. It only
+  // goes dark when the flag explicitly says {"enabled": false}. Checked on load
+  // and then every POLL_MS, so tabs left open also go dark within one interval.
+  var blocked = false;
+  function checkStatus() {
+    if (blocked || !STATUS_URL) return;
+    var url = STATUS_URL + (STATUS_URL.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now();
+    fetch(url, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
         if (data && data.enabled === false) {
+          blocked = true;
           onReady(function () {
             block(
               data.title || 'Temporarily unavailable',
@@ -168,5 +177,9 @@
         }
       })
       .catch(function () { /* fail open — do nothing */ });
+  }
+  if (STATUS_URL) {
+    checkStatus();
+    if (POLL_MS > 0) setInterval(checkStatus, POLL_MS);
   }
 })();
