@@ -81,17 +81,22 @@ Open it at:
 (It's left out of the site navigation and marked `noindex`, but it is a public
 URL — its security rests entirely on the token, not on the URL being secret.)
 
-**Signing in.** The "password" is a GitHub access token — the real key that can
-change your live site. Create one once:
+**Signing in — two steps.**
 
-1. Go to **GitHub → Settings → Developer settings → Fine-grained tokens →
-   Generate new token** (https://github.com/settings/personal-access-tokens/new).
-2. Repository access: **Only select repositories → common-plate-group-preview**.
-3. Permissions: **Contents → Read and write** (nothing else).
-4. Generate, copy the token, paste it into the admin page, sign in.
+1. **Username + password.** Default: `caleb443` / `buddy123`. This is a
+   *convenience gate* only — it lives in browser-visible code, so treat it as
+   "keeps casual people out," not real security. The password is stored **hashed**
+   (SHA-256) in `admin.js`, not in plain text. To change it, replace `PASS_SHA256`
+   with the hash of your new password:
+   `printf '%s' 'yourNewPassword' | shasum -a 256`
+2. **Connect GitHub (one time).** After signing in, paste a GitHub access token —
+   the *real* key that can change your live site. Create one at
+   **GitHub → Settings → Developer settings → Fine-grained tokens** (only the
+   `common-plate-group-preview` repo, permission **Contents → Read and write**).
+   It's saved on your device and reused next time, so day to day you just enter
+   the username and password. The token is never committed to the repo.
 
-Check "Remember on this device" only on a machine that's yours. Otherwise the
-token is kept for that browser session only and cleared when you sign out.
+Use "Forget GitHub token on this device" on any machine that isn't yours.
 
 **Using it.** "Blank the site" sets the kill-switch to offline; "Restore site"
 turns it back on. `admin.html` does **not** load `guard.js`, so blanking the

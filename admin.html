@@ -37,7 +37,7 @@
     .ghost   { background: #232833; color: #e9edf2; }
     .btns { display: flex; gap: 10px; }
     .btns button { margin-top: 0; }
-    .hint { font-size: .78rem; color: #79839; color: #7d8797; margin-top: 14px; }
+    .hint { font-size: .78rem; color: #7d8797; margin-top: 14px; }
     .hint a { color: #7fa8ff; }
     .status-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; }
     .live { background: #10331d; color: #4ade80; }
@@ -47,28 +47,44 @@
     .msg.ok { color: #4ade80; } .msg.err { color: #ff8a8d; }
     .hidden { display: none; }
     .staterow { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 4px; }
+    .link { background: none; border: 0; color: #7d8797; text-decoration: underline; cursor: pointer; font-size: .8rem; width: auto; padding: 0; margin-top: 14px; font-weight: 400; }
   </style>
 </head>
 <body>
   <div class="card">
 
-    <!-- LOGIN VIEW -->
+    <!-- 1. USERNAME / PASSWORD LOGIN -->
     <div id="login">
       <h1>Site Admin</h1>
       <p class="sub">Sign in to take the site offline or bring it back.</p>
-      <label for="token">Access token</label>
-      <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
-      <div class="row"><input id="remember" type="checkbox"><label for="remember" style="margin:0">Remember on this device</label></div>
+      <label for="user">Username</label>
+      <input id="user" type="text" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <label for="pass">Password</label>
+      <input id="pass" type="password" autocomplete="off">
       <button class="primary" id="signin">Sign in</button>
       <div class="msg" id="loginMsg"></div>
+      <p class="hint">This login keeps casual visitors out. It is not strong security on
+        its own — the real control is the GitHub connection you set up after signing in.</p>
+    </div>
+
+    <!-- 2. ONE-TIME GITHUB CONNECTION -->
+    <div id="setup" class="hidden">
+      <h1>Connect to GitHub</h1>
+      <p class="sub">One-time step so this panel can actually change the live site.
+        Your access token is saved on this device and reused next time.</p>
+      <label for="token">GitHub access token</label>
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
+      <div class="row"><input id="remember" type="checkbox" checked><label for="remember" style="margin:0">Remember on this device</label></div>
+      <button class="primary" id="connect">Connect</button>
+      <div class="msg" id="setupMsg"></div>
       <p class="hint">
-        Your access token <em>is</em> your login — it's the key that can change the live site, so treat it like a password and don't share it.
-        Create one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → fine-grained tokens</a>:
-        give it access to only the <strong>common-plate-group-preview</strong> repo, with <strong>Contents → Read and write</strong>. Nothing else.
+        Create a token at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → fine-grained tokens</a>:
+        access to only the <strong>common-plate-group-preview</strong> repo, permission
+        <strong>Contents → Read and write</strong>. Treat it like a password.
       </p>
     </div>
 
-    <!-- CONSOLE VIEW -->
+    <!-- 3. CONTROL PANEL -->
     <div id="console" class="hidden">
       <h1>Site control</h1>
       <div class="staterow">
@@ -83,11 +99,12 @@
       </div>
       <div class="msg" id="consoleMsg"></div>
       <div class="note">
-        Changes take up to a few minutes to reach every visitor (content-delivery caching).
-        Tabs already open update within 5 minutes; a fresh visit updates almost immediately.
-        View the live site: <a id="liveLink" href="https://bud123567.github.io/common-plate-group-preview/" target="_blank" rel="noopener">open</a>
+        Changes reach fresh visits within a couple of minutes and already-open tabs
+        within 5 minutes. Live site:
+        <a id="liveLink" href="https://bud123567.github.io/common-plate-group-preview/" target="_blank" rel="noopener">open</a>
       </div>
       <button class="ghost" id="signout" style="margin-top:18px">Sign out</button>
+      <button class="link" id="disconnect">Forget GitHub token on this device</button>
     </div>
 
   </div>
